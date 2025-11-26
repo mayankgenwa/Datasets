@@ -1,0 +1,35 @@
+name: Run CI Pipeline
+
+on:
+  workflow_dispatch:        # IMPORTANT (Allows Flowise to trigger this workflow)
+    inputs:
+      ci_event_type:
+        description: "Type of Git event (PR, PUSH, MERGE)"
+        required: false
+      ci_triggered_by:
+        description: "Who triggered CI"
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Output metadata
+        run: |
+          echo "CI Event Type: ${{ github.event.inputs.ci_event_type }}"
+          echo "Triggered By: ${{ github.event.inputs.ci_triggered_by }}"
